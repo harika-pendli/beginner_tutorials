@@ -117,3 +117,10 @@ Change to the root directory of the package, ```/beginner_tutorials```, and run:
 cppcheck --enable=all --std=c++17 ./src/*.cpp ./include/beginner_tutorials/*.hpp --suppress=missingIncludeSystem --suppress=unmatchedSuppression --suppress=unusedFunction --suppress=missingInclude --suppress=useInitializationList > results/cppcheck.txt
 ```
 The results of running ```cppcheck``` can be found in ```/results/cppcheck.txt```.
+
+### Google style fomat
+
+To format code to Google C++ Sytle, run this command for each .cpp/.hpp file. 
+```
+  clang-format -style=Google -i your_file.cpp
+```
