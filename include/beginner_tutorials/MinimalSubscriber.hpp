@@ -4,9 +4,9 @@
  * @brief Class implementation of the Minimal subscriber
  * @version 0.1
  * @date 2022-11-08
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
 #pragma once
 
@@ -18,12 +18,13 @@
 using std::placeholders::_1;
 
 /**
- * @brief Class (subclass of Node) and registers a member function as a callback from the topic.
- * 
+ * @brief Class (subclass of Node) and registers a member function as a callback
+ * from the topic.
+ *
  */
 class MinimalSubscriber : public rclcpp::Node {
  public:
-    MinimalSubscriber();
+  MinimalSubscriber();
 
  private:
   void topic_callback(const std_msgs::msg::String::SharedPtr msg) const;

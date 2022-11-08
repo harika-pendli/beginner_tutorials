@@ -4,9 +4,9 @@
  * @brief Class implementation of the Minimal publisher
  * @version 0.1
  * @date 2022-11-08
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
 #pragma once
 
@@ -19,12 +19,13 @@
 using namespace std::chrono_literals;
 
 /**
- * @brief Class (subclass of Node) and uses std::bind() to register a member function as a callback from the timer.
- * 
+ * @brief Class (subclass of Node) and uses std::bind() to register a member
+ * function as a callback from the timer.
+ *
  */
 class MinimalPublisher : public rclcpp::Node {
  public:
-    MinimalPublisher();
+  MinimalPublisher();
 
  private:
   void timer_callback();
