@@ -151,6 +151,7 @@ The results of running ```cppcheck``` can be found in ```/results/cppcheck.txt``
 ### Google style fomat
 
 To format code to Google C++ Sytle, run this command for each .cpp/.hpp file. 
+
 ```
   clang-format -style=Google -i your_file.cpp
 ```
