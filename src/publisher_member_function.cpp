@@ -21,9 +21,15 @@
 
 auto main_string = std::string("This is my main string");
 
+/**
+ * @brief Construct a new Minimal Publisher:: Minimal Publisher object
+ * 
+ */
 MinimalPublisher::MinimalPublisher() : Node("minimal_publisher"), count_(0) {
+  
   publisher_ = this->create_publisher<STRING>("topic", 10);
-
+  
+  // Setting up parameter for publisher frequency 
   auto freq_d = rcl_interfaces::msg::ParameterDescriptor();
   freq_d.description = "Sets Publisher frequency in Hz.";
   this->declare_parameter("freq_pub", 3.0, freq_d);
@@ -39,7 +45,8 @@ MinimalPublisher::MinimalPublisher() : Node("minimal_publisher"), count_(0) {
                 std::placeholders::_1, std::placeholders::_2);
 
   service_ = create_service<RENAME_STRING>("update_string", serviceCallbackPtr);
-
+  
+  //checks if any subscribers are already listening
   if (this->count_subscribers("topic") == 0) {
     RCLCPP_WARN_STREAM(this->get_logger(), "No subscriber found on this topic");
   }
@@ -53,6 +60,12 @@ void MinimalPublisher::timer_callback() {
   publisher_->publish(message);
 }
 
+/**
+ * @brief Service that changes the base string to the requested message. 
+ * 
+ * @param request 
+ * @param response 
+ */
 void MinimalPublisher::change_base_string_srv(REQUEST request,
       RESPONSE response) {
   response->out = request->inp;
@@ -66,6 +79,11 @@ void MinimalPublisher::change_base_string_srv(REQUEST request,
                      "sending back response:" << response->out);
 }
 
+/**
+ * @brief returns an error stream message when forced to shutdown using ctrl+c
+ * 
+ * @param signum 
+ */
 void node_forcestop(int signum) {
   if (signum == 2) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger("rclcpp"), "Force stopped! Bye!");
@@ -75,7 +93,6 @@ void node_forcestop(int signum) {
 int main(int argc, char* argv[]) {
   signal(SIGINT, node_forcestop);
   rclcpp::init(argc, argv);
-  
   rclcpp::spin(std::make_shared<MinimalPublisher>());
   rclcpp::shutdown();
   return 0;

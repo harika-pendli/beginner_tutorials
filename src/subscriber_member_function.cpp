@@ -16,6 +16,10 @@
 
 #include "../include/beginner_tutorials/MinimalSubscriber.hpp"
 
+/**
+ * @brief Construct a new Minimal Subscriber:: Minimal Subscriber object
+ * 
+ */
 MinimalSubscriber::MinimalSubscriber() : Node("minimal_subscriber") {
   subscription_ = this->create_subscription<std_msgs::msg::String>(
       "topic", 10, std::bind(&MinimalSubscriber::topic_callback, this, _1));
@@ -31,6 +35,11 @@ void MinimalSubscriber::topic_callback(
   RCLCPP_INFO_STREAM(this->get_logger(), "I heard: " << msg->data);
 }
 
+/**
+ * @brief returns an error stream message when forced to shutdown using ctrl+c
+ * 
+ * @param signum 
+ */
 void node_forcestop(int signum) {
   if (signum == 2) {
     RCLCPP_FATAL_STREAM(rclcpp::get_logger("rclcpp"), "Force stopped! Bye!");
