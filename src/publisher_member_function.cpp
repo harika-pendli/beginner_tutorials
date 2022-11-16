@@ -43,6 +43,7 @@ MinimalPublisher::MinimalPublisher() : Node("minimal_publisher"), count_(0) {
   if (this->count_subscribers("topic") == 0) {
     RCLCPP_WARN_STREAM(this->get_logger(), "No subscriber found on this topic");
   }
+  this->get_logger().set_level(rclcpp::Logger::Level::Debug);
 }
 
 void MinimalPublisher::timer_callback() {
@@ -74,6 +75,7 @@ void node_forcestop(int signum) {
 int main(int argc, char* argv[]) {
   signal(SIGINT, node_forcestop);
   rclcpp::init(argc, argv);
+  
   rclcpp::spin(std::make_shared<MinimalPublisher>());
   rclcpp::shutdown();
   return 0;

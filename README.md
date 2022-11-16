@@ -5,7 +5,7 @@
 
 ## Overview 
 
-Creation of a ROS2 package and modification of the example publisher and sunscriber scripts to publish a custom string message, whilst following the Google C++ Style Guide. 
+Creation of a ROS2 package and modification of the example publisher and subscriber scripts to provide a service to modify the main string message in the publisher. The package also comprises of a launch file with the option to set paramters (publisher frequency). 
 
 ## Assumptions
 * OS: Ubuntu Linux Focal (20.04) 64-bit
@@ -17,6 +17,8 @@ Creation of a ROS2 package and modification of the example publisher and sunscri
 * ```ament_cmake```
 * ```rclcpp```
 * ```std_msgs```
+* ```ros2launch```
+* ```ros2idl_default_generators```
 
 ## ROS2 Installation (source)
 
@@ -42,8 +44,6 @@ rosdep install --from-paths src --ignore-src -y --skip-keys "fastcdr rti-connext
 
 colcon build --symlink-install
 ```
-
-NOTE: The previous step can take about 2+ hours to run.
 
 ### Environment Setup
 ```
@@ -101,8 +101,38 @@ ros2 run beginner_tutorials listener
 
 Enter ```Ctrl+c``` in each terminal to stop the nodes from spinning.
 
+### Publisher-Subscriber launch 
+In another new terminal, navigate to your ROS2 workspace (```ros2_ws```) and source the setup files,
+```
+cd <path-to-ROS2-workspace>/ros2_ws
+. install/setup.bash
+ros2 launch beginner_tutorials pubsub_launch.yaml
+```
+To launch the nodes by setting parameter -frequency of publisher
+navigate to your ROS2 workspace (```ros2_ws```) and source the setup files,
+```
+cd <path-to-ROS2-workspace>/ros2_ws
+. install/setup.bash
+ros2 launch beginner_tutorials pubsub_launch.yaml freq_pub:=8.0
+```
+
+### Service Demo
+In a new terminal, navigate to your ROS2 workspace (```ros2_ws```) and source the setup files,
+```
+cd <path-to-ROS2-workspace>/ros2_ws
+. install/setup.bash
+ros2 service call /update_string beginner_tutorials/srv/RenameString "{inp: 'This is my new message'}"
+```
 
 ## Results
+
+### Log outputs
+
+To view the log messages in ```rqt_console```, open a terminal and run:
+```
+ros2 run rqt_console rqt_console
+```
+The screenshots of the rqt console windows are in results folder.
 
 ### cpplint 
 Change to the root directory of the package, ```/beginner_tutorials```, and run:
