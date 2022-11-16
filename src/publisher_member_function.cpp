@@ -30,13 +30,20 @@ MinimalPublisher::MinimalPublisher()
   
     auto serviceCallbackPtr = std::bind (&MinimalPublisher::change_base_string_srv, this, std::placeholders::_1, std::placeholders::_2);
     service_ = create_service <beginner_tutorials::srv::RenameString> ("update_string",serviceCallbackPtr);
+
+    if (this->count_subscribers("topic") == 0) {
+
+      RCLCPP_WARN_STREAM(this->get_logger(),
+        "No subscriber found on this topic");
+     }
+
 }
 
 void MinimalPublisher::timer_callback() {
 
   auto message = std_msgs::msg::String();
   message.data = main_string + std::to_string(count_++);
-  RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
+  RCLCPP_INFO_STREAM(this->get_logger(), "Publishing: " << message.data);
   publisher_->publish(message);
   
 }
@@ -45,20 +52,23 @@ void MinimalPublisher::change_base_string_srv(const std::shared_ptr<beginner_tut
            std::shared_ptr<beginner_tutorials::srv::RenameString::Response> response)  // CHANGE
 {
   response-> out = request->inp;                                      // CHANGE
+  if (response->out == main_string) {
+    RCLCPP_DEBUG_STREAM(this->get_logger(),"Tried debug stream");
+  }
   main_string = response -> out;
-  RCLCPP_INFO(this->get_logger(), "Incoming request\na: '%s'" ,  // CHANGE
-                request->inp.c_str());                                         // CHANGE
-  RCLCPP_INFO(this->get_logger(), "sending back response: '%s'", response->out.c_str());
+  RCLCPP_INFO_STREAM(this->get_logger(), "Incoming request" << request->inp);                                         // CHANGE
+  RCLCPP_INFO_STREAM(this->get_logger(), "sending back response:" << response->out);
 }
 
 void node_forcestop(int signum) {
     if (signum == 2) {
-        RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),
+        RCLCPP_ERROR_STREAM(rclcpp::get_logger("rclcpp"),
                         "Force stopped! Bye!");
     }
 }
 
 int main(int argc, char* argv[]) {
+  
   signal(SIGINT, node_forcestop);
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<MinimalPublisher>());

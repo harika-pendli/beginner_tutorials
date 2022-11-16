@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "rclcpp/rclcpp.hpp"
+#include <rclcpp/logging.hpp>
 #include "std_msgs/msg/string.hpp"
 #include "beginner_tutorials/srv/rename_string.hpp"
 

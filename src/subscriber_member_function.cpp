@@ -13,18 +13,40 @@
 // limitations under the License.
 
 #include "../include/beginner_tutorials/MinimalSubscriber.hpp"
+#include <signal.h>
+
 
 MinimalSubscriber::MinimalSubscriber() : Node("minimal_subscriber") {
   subscription_ = this->create_subscription<std_msgs::msg::String>(
       "topic", 10, std::bind(&MinimalSubscriber::topic_callback, this, _1));
+
+  if (this->count_publishers("topic") == 0) {
+
+      RCLCPP_WARN_STREAM(this->get_logger(),
+        "No publishers on this topic to listen");
+     }
+     
 }
 
 void MinimalSubscriber::topic_callback(
     const std_msgs::msg::String::SharedPtr msg) const {
-  RCLCPP_INFO(this->get_logger(), "I heard: '%s'", msg->data.c_str());
+
+  RCLCPP_INFO_STREAM(this->get_logger(), "I heard: " <<msg->data);
+
+
+}
+
+void node_forcestop(int signum) {
+    
+    if (signum == 2) {
+        RCLCPP_FATAL_STREAM(rclcpp::get_logger("rclcpp"),
+                        "Force stopped! Bye!");
+        RCLCPP_DEBUG_STREAM(rclcpp::get_logger("rclcpp"), "Call to end node worked ");
+    }
 }
 
 int main(int argc, char* argv[]) {
+  signal(SIGINT, node_forcestop);
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<MinimalSubscriber>());
   rclcpp::shutdown();
