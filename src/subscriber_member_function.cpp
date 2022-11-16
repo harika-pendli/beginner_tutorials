@@ -12,37 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "../include/beginner_tutorials/MinimalSubscriber.hpp"
 #include <signal.h>
 
+#include "../include/beginner_tutorials/MinimalSubscriber.hpp"
 
 MinimalSubscriber::MinimalSubscriber() : Node("minimal_subscriber") {
   subscription_ = this->create_subscription<std_msgs::msg::String>(
       "topic", 10, std::bind(&MinimalSubscriber::topic_callback, this, _1));
 
   if (this->count_publishers("topic") == 0) {
-
-      RCLCPP_WARN_STREAM(this->get_logger(),
-        "No publishers on this topic to listen");
-     }
-     
+    RCLCPP_WARN_STREAM(this->get_logger(),
+                       "No publishers on this topic to listen");
+  }
 }
 
 void MinimalSubscriber::topic_callback(
     const std_msgs::msg::String::SharedPtr msg) const {
-
-  RCLCPP_INFO_STREAM(this->get_logger(), "I heard: " <<msg->data);
-
-
+  RCLCPP_INFO_STREAM(this->get_logger(), "I heard: " << msg->data);
 }
 
 void node_forcestop(int signum) {
-    
-    if (signum == 2) {
-        RCLCPP_FATAL_STREAM(rclcpp::get_logger("rclcpp"),
-                        "Force stopped! Bye!");
-        RCLCPP_DEBUG_STREAM(rclcpp::get_logger("rclcpp"), "Call to end node worked ");
-    }
+  if (signum == 2) {
+    RCLCPP_FATAL_STREAM(rclcpp::get_logger("rclcpp"), "Force stopped! Bye!");
+    RCLCPP_DEBUG_STREAM(rclcpp::get_logger("rclcpp"),
+                        "Call to end node worked ");
+  }
 }
 
 int main(int argc, char* argv[]) {

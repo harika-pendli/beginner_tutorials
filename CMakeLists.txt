@@ -36,11 +36,14 @@ rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME}
 target_link_libraries(talker "${cpp_typesupport_target}")
 
 
-
-
 install(TARGETS
   talker
   listener
   DESTINATION lib/${PROJECT_NAME})
+
+install(DIRECTORY 
+  launch
+  DESTINATION share/${PROJECT_NAME}
+)
 
 ament_package()

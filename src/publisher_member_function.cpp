@@ -16,59 +16,62 @@
  * member function as a callback from the timer. */
 
 #include <signal.h>
+#include <chrono>
 #include "../include/beginner_tutorials/MinimalPublisher.hpp"
-//#include <beginner_tutorials/srv/rename_string.hpp>
 
 auto main_string = std::string("This is my main string");
 
-MinimalPublisher::MinimalPublisher() 
-  : Node("minimal_publisher"), count_(0) {
+MinimalPublisher::MinimalPublisher() : Node("minimal_publisher"), count_(0) {
+  publisher_ = this->create_publisher<STRING>("topic", 10);
 
-    publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
-    timer_ = this->create_wall_timer( 500ms, std::bind(&MinimalPublisher::timer_callback, this));
+  auto freq_d = rcl_interfaces::msg::ParameterDescriptor();
+  freq_d.description = "Sets Publisher frequency in Hz.";
+  this->declare_parameter("freq_pub", 3.0, freq_d);
+  auto freq_pub =
+      this->get_parameter("freq_pub").get_parameter_value().get<std::float_t>();
 
-  
-    auto serviceCallbackPtr = std::bind (&MinimalPublisher::change_base_string_srv, this, std::placeholders::_1, std::placeholders::_2);
-    service_ = create_service <beginner_tutorials::srv::RenameString> ("update_string",serviceCallbackPtr);
+  timer_ = this->create_wall_timer(
+      std::chrono::milliseconds(static_cast<int>(1000 / freq_pub)),
+      std::bind(&MinimalPublisher::timer_callback, this));
 
-    if (this->count_subscribers("topic") == 0) {
+  auto serviceCallbackPtr =
+      std::bind(&MinimalPublisher::change_base_string_srv, this,
+                std::placeholders::_1, std::placeholders::_2);
 
-      RCLCPP_WARN_STREAM(this->get_logger(),
-        "No subscriber found on this topic");
-     }
+  service_ = create_service<RENAME_STRING>("update_string", serviceCallbackPtr);
 
+  if (this->count_subscribers("topic") == 0) {
+    RCLCPP_WARN_STREAM(this->get_logger(), "No subscriber found on this topic");
+  }
 }
 
 void MinimalPublisher::timer_callback() {
-
   auto message = std_msgs::msg::String();
   message.data = main_string + std::to_string(count_++);
   RCLCPP_INFO_STREAM(this->get_logger(), "Publishing: " << message.data);
   publisher_->publish(message);
-  
 }
 
-void MinimalPublisher::change_base_string_srv(const std::shared_ptr<beginner_tutorials::srv::RenameString::Request> request,  // CHANGE
-           std::shared_ptr<beginner_tutorials::srv::RenameString::Response> response)  // CHANGE
-{
-  response-> out = request->inp;                                      // CHANGE
+void MinimalPublisher::change_base_string_srv(REQUEST request,
+      RESPONSE response) {
+  response->out = request->inp;
   if (response->out == main_string) {
-    RCLCPP_DEBUG_STREAM(this->get_logger(),"Tried debug stream");
+    RCLCPP_DEBUG_STREAM(this->get_logger(), "Tried debug stream");
   }
-  main_string = response -> out;
-  RCLCPP_INFO_STREAM(this->get_logger(), "Incoming request" << request->inp);                                         // CHANGE
-  RCLCPP_INFO_STREAM(this->get_logger(), "sending back response:" << response->out);
+  main_string = response->out;
+  RCLCPP_INFO_STREAM(this->get_logger(),
+                     "Incoming request" << request->inp);  // CHANGE
+  RCLCPP_INFO_STREAM(this->get_logger(),
+                     "sending back response:" << response->out);
 }
 
 void node_forcestop(int signum) {
-    if (signum == 2) {
-        RCLCPP_ERROR_STREAM(rclcpp::get_logger("rclcpp"),
-                        "Force stopped! Bye!");
-    }
+  if (signum == 2) {
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger("rclcpp"), "Force stopped! Bye!");
+  }
 }
 
 int main(int argc, char* argv[]) {
-  
   signal(SIGINT, node_forcestop);
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<MinimalPublisher>());
