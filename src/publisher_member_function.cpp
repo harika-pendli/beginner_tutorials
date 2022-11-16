@@ -16,19 +16,40 @@
  * member function as a callback from the timer. */
 
 #include "../include/beginner_tutorials/MinimalPublisher.hpp"
+//#include <beginner_tutorials/srv/rename_string.hpp>
 
-MinimalPublisher::MinimalPublisher() : Node("minimal_publisher"), count_(0) {
-  publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
-  timer_ = this->create_wall_timer(
-      500ms, std::bind(&MinimalPublisher::timer_callback, this));
+auto main_string = std::string("This is my main string");
+
+MinimalPublisher::MinimalPublisher() 
+  : Node("minimal_publisher"), count_(0) {
+
+    publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
+    timer_ = this->create_wall_timer( 500ms, std::bind(&MinimalPublisher::timer_callback, this));
+
+  
+    auto serviceCallbackPtr = std::bind (&MinimalPublisher::change_base_string_srv, this, std::placeholders::_1, std::placeholders::_2);
+    service_ = create_service <beginner_tutorials::srv::RenameString> ("update_string",serviceCallbackPtr);
 }
 
 void MinimalPublisher::timer_callback() {
+
   auto message = std_msgs::msg::String();
-  message.data = "Hello, I am publisher! " + std::to_string(count_++);
+  message.data = main_string + std::to_string(count_++);
   RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
   publisher_->publish(message);
+  
 }
+
+void MinimalPublisher::change_base_string_srv(const std::shared_ptr<beginner_tutorials::srv::RenameString::Request> request,  // CHANGE
+           std::shared_ptr<beginner_tutorials::srv::RenameString::Response> response)  // CHANGE
+{
+  response-> out = request->inp;                                      // CHANGE
+  main_string = response -> out;
+  RCLCPP_INFO(this->get_logger(), "Incoming request\na: '%s'" ,  // CHANGE
+                request->inp.c_str());                                         // CHANGE
+  RCLCPP_INFO(this->get_logger(), "sending back response: '%s'", response->out.c_str());
+}
+
 
 int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
