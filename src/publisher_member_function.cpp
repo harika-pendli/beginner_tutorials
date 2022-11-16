@@ -15,6 +15,7 @@
 /* This example creates a subclass of Node and uses std::bind() to register a
  * member function as a callback from the timer. */
 
+#include <signal.h>
 #include "../include/beginner_tutorials/MinimalPublisher.hpp"
 //#include <beginner_tutorials/srv/rename_string.hpp>
 
@@ -50,8 +51,15 @@ void MinimalPublisher::change_base_string_srv(const std::shared_ptr<beginner_tut
   RCLCPP_INFO(this->get_logger(), "sending back response: '%s'", response->out.c_str());
 }
 
+void node_forcestop(int signum) {
+    if (signum == 2) {
+        RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),
+                        "Force stopped! Bye!");
+    }
+}
 
 int main(int argc, char* argv[]) {
+  signal(SIGINT, node_forcestop);
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<MinimalPublisher>());
   rclcpp::shutdown();
