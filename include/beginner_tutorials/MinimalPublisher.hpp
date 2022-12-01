@@ -18,6 +18,10 @@
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 
+#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "tf2/LinearMath/Quaternion.h"
+#include "tf2_ros/static_transform_broadcaster.h"
+
 using namespace std::chrono_literals;  // for use of time units: "ms", "s"
 // using std::placeholders::_1;          // for use with binding Class member
 // using std::placeholders::_2;          // callback function
@@ -51,6 +55,8 @@ class MinimalPublisher : public rclcpp::Node {
   PUBLISHER publisher_;
   size_t count_;
   SERVICE service_;
+  std::shared_ptr<tf2_ros::StaticTransformBroadcaster> tf_static_broadcaster_;
   void change_base_string_srv(REQUEST Request,
                               RESPONSE Response);  // CHANGE
+
 };

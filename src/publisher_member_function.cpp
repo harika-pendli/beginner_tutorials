@@ -51,6 +51,27 @@ MinimalPublisher::MinimalPublisher() : Node("minimal_publisher"), count_(0) {
     RCLCPP_WARN_STREAM(this->get_logger(), "No subscriber found on this topic");
   }
   this->get_logger().set_level(rclcpp::Logger::Level::Debug);
+
+  tf_static_broadcaster_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
+
+  geometry_msgs::msg::TransformStamped t;
+
+  t.header.stamp = this->get_clock()->now();
+  t.header.frame_id = "world";
+  t.child_frame_id = "talk";
+  
+  // Translation component in meters
+  t.transform.translation.x = 0.1;
+  t.transform.translation.y = 0.2;
+  t.transform.translation.z = 0.3;
+
+  // Quaternion corresponding to XYZ Euler Angles
+  t.transform.rotation.x = 0.05;
+  t.transform.rotation.y = 0.03;
+  t.transform.rotation.z = 0.02;
+  t.transform.rotation.w = 0.1;
+
+  tf_static_broadcaster_->sendTransform(t);
 }
 
 void MinimalPublisher::timer_callback() {
