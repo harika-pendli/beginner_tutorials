@@ -18,7 +18,7 @@
 
 /**
  * @brief Construct a new Minimal Subscriber:: Minimal Subscriber object
- * 
+ *
  */
 MinimalSubscriber::MinimalSubscriber() : Node("minimal_subscriber") {
   subscription_ = this->create_subscription<std_msgs::msg::String>(
@@ -37,8 +37,8 @@ void MinimalSubscriber::topic_callback(
 
 /**
  * @brief returns an error stream message when forced to shutdown using ctrl+c
- * 
- * @param signum 
+ *
+ * @param signum
  */
 void node_forcestop(int signum) {
   if (signum == 2) {

@@ -16,20 +16,20 @@
  * member function as a callback from the timer. */
 
 #include <signal.h>
+
 #include <chrono>
+
 #include "../include/beginner_tutorials/MinimalPublisher.hpp"
 
 auto main_string = std::string("This is my main string");
 
 /**
  * @brief Construct a new Minimal Publisher:: Minimal Publisher object
- * 
+ *
  */
 MinimalPublisher::MinimalPublisher() : Node("minimal_publisher"), count_(0) {
-  
   publisher_ = this->create_publisher<STRING>("topic", 10);
-  
-  // Setting up parameter for publisher frequency 
+  // Setting up parameter for publisher frequency
   auto freq_d = rcl_interfaces::msg::ParameterDescriptor();
   freq_d.description = "Sets Publisher frequency in Hz.";
   this->declare_parameter("freq_pub", 3.0, freq_d);
@@ -45,21 +45,22 @@ MinimalPublisher::MinimalPublisher() : Node("minimal_publisher"), count_(0) {
                 std::placeholders::_1, std::placeholders::_2);
 
   service_ = create_service<RENAME_STRING>("update_string", serviceCallbackPtr);
-  
-  //checks if any subscribers are already listening
+
+  // checks if any subscribers are already listening
   if (this->count_subscribers("topic") == 0) {
     RCLCPP_WARN_STREAM(this->get_logger(), "No subscriber found on this topic");
   }
   this->get_logger().set_level(rclcpp::Logger::Level::Debug);
 
-  tf_static_broadcaster_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
+  tf_static_broadcaster_ =
+      std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
 
   geometry_msgs::msg::TransformStamped t;
 
   t.header.stamp = this->get_clock()->now();
   t.header.frame_id = "world";
   t.child_frame_id = "talk";
-  
+
   // Translation component in meters
   t.transform.translation.x = 0.1;
   t.transform.translation.y = 0.2;
@@ -82,13 +83,13 @@ void MinimalPublisher::timer_callback() {
 }
 
 /**
- * @brief Service that changes the base string to the requested message. 
- * 
- * @param request 
- * @param response 
+ * @brief Service that changes the base string to the requested message.
+ *
+ * @param request
+ * @param response
  */
 void MinimalPublisher::change_base_string_srv(REQUEST request,
-      RESPONSE response) {
+                                              RESPONSE response) {
   response->out = request->inp;
   if (response->out == main_string) {
     RCLCPP_DEBUG_STREAM(this->get_logger(), "Tried debug stream");
@@ -102,8 +103,8 @@ void MinimalPublisher::change_base_string_srv(REQUEST request,
 
 /**
  * @brief returns an error stream message when forced to shutdown using ctrl+c
- * 
- * @param signum 
+ *
+ * @param signum
  */
 void node_forcestop(int signum) {
   if (signum == 2) {

@@ -1,0 +1,31 @@
+launch:
+
+- arg:
+    name: "freq_pub"
+    default: "2.0"
+- arg:
+    name: "record_rosbag2"
+    default: "false"
+- arg:
+    name: "name_rosbag2"
+    default: "topic"
+
+- node:
+    pkg: "beginner_tutorials"
+    exec: "talker"
+    name: "minimal_publisher"
+    param:
+    -
+      name: "freq_pub"
+      value: "$(var freq_pub)"
+
+- node:
+    pkg: "beginner_tutorials"
+    exec: "listener"
+    name: "minimal_subscriber"
+
+# start rosbag recording
+- executable:
+    cmd: "ros2 bag record -a --output ../results/$(var name_rosbag2)"
+    if: $(var record_rosbag2)
+  

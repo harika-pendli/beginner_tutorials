@@ -15,10 +15,9 @@
 #include <rclcpp/logging.hpp>
 
 #include "beginner_tutorials/srv/rename_string.hpp"
+#include "geometry_msgs/msg/transform_stamped.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
-
-#include "geometry_msgs/msg/transform_stamped.hpp"
 #include "tf2/LinearMath/Quaternion.h"
 #include "tf2_ros/static_transform_broadcaster.h"
 
@@ -58,5 +57,4 @@ class MinimalPublisher : public rclcpp::Node {
   std::shared_ptr<tf2_ros::StaticTransformBroadcaster> tf_static_broadcaster_;
   void change_base_string_srv(REQUEST Request,
                               RESPONSE Response);  // CHANGE
-
 };

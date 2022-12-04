@@ -106,14 +106,22 @@ In another new terminal, navigate to your ROS2 workspace (```ros2_ws```) and sou
 ```
 cd <path-to-ROS2-workspace>/ros2_ws
 . install/setup.bash
-ros2 launch beginner_tutorials pubsub_launch.yaml
+ros2 launch beginner_tutorials rosbag_launch.py 
 ```
-To launch the nodes by setting parameter -frequency of publisher
+To launch the nodes by setting parameter -record all topics to bag files
 navigate to your ROS2 workspace (```ros2_ws```) and source the setup files,
 ```
 cd <path-to-ROS2-workspace>/ros2_ws
 . install/setup.bash
-ros2 launch beginner_tutorials pubsub_launch.yaml freq_pub:=8.0
+ros2 launch beginner_tutorials rosbag_launch.py record_all_topics:=True
+```
+
+### To see bag files info
+
+```
+cd <path-to-ROS2-workspace>/ros2_ws
+. install/setup.bash
+ros2 bag info all_topics_bag
 ```
 
 ### Service Demo
@@ -122,6 +130,21 @@ In a new terminal, navigate to your ROS2 workspace (```ros2_ws```) and source th
 cd <path-to-ROS2-workspace>/ros2_ws
 . install/setup.bash
 ros2 service call /update_string beginner_tutorials/srv/RenameString "{inp: 'This is my new message'}"
+```
+
+### Run ROS tests
+In a new terminal, navigate to your ROS2 workspace (```ros2_ws```) and source the setup files,
+```
+cd <path-to-ROS2-workspace>/ros2_ws
+. install/setup.bash
+colcon test --event-handlers console_direct+ --packages-select beginner_tutorials
+```
+
+### Play back bag files
+In a new terminal, navigate to your ROS2 workspace (```ros2_ws```) and source the setup files,
+```
+cd <path-to-bag-folder>
+ros2 bag play all_topics_bag
 ```
 
 ## Results
