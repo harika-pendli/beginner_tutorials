@@ -15,7 +15,7 @@ def generate_launch_description():
         
         DeclareLaunchArgument(
             'freq_pub',
-            default_value='2.0'
+            default_value='4.0'
         ),
 
         DeclareLaunchArgument(
@@ -30,6 +30,13 @@ def generate_launch_description():
             parameters=[{
                 "freq_pub": LaunchConfiguration('freq_pub'),
             }]
+        ),
+
+        Node(
+            package='beginner_tutorials',
+            executable='listener',
+            name='minimal_subscriber',
+            
         ),
 
 
