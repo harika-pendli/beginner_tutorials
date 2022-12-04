@@ -5,7 +5,7 @@
 
 ## Overview 
 
-Creation of a ROS2 package and modification of the example publisher and subscriber scripts to provide a service to modify the main string message in the publisher. The package also comprises of a launch file with the option to set paramters (publisher frequency). 
+Creation of a ROS2 package and modification of the example publisher and subscriber scripts to provide a service to modify the main string message in the publisher. The package also comprises of a launch file with the option to set paramters (publisher frequency, recording bag files). This package also has ROS test folder which has test cases in the the test folder. Instructions related to bag files and test case running can be found below.
 
 ## Assumptions
 * OS: Ubuntu Linux Focal (20.04) 64-bit
